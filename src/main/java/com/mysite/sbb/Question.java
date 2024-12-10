@@ -1,12 +1,9 @@
 package com.mysite.sbb;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -25,5 +22,8 @@ public class Question {
     @Column(columnDefinition = "TEXT") // columnDefinition: 열 데이터의 성격 설정
     private String content;
 
-    private LocalDateTime createDate; // 질문 엔티티 참조하기 위해서
+    private LocalDateTime createDate;
+
+    @OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE)
+    private List<Answer> answersList;
 }

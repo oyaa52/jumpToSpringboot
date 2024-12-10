@@ -1,12 +1,14 @@
 package com.mysite.sbb;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
+@Entity
 public class Answer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,5 +19,6 @@ public class Answer {
 
     private LocalDateTime createTime; // column annotation은 column의 성격을 특정할 때 사용되며, 보통은 annotation 없이도 column으로 인식함
 
-    private Question question;
+    @ManyToOne
+    private Question question; // 질문 엔티티 참조하기 위해서
 }
