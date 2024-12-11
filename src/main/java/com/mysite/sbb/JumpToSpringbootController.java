@@ -7,9 +7,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class JumpToSpringbootController {
     @GetMapping("/")
-    @ResponseBody
-    public String home() {
-        return "This is our home.";
+    public String root() {
+        return "redirect:/question/list";
     }
 
     @GetMapping("/hello")
