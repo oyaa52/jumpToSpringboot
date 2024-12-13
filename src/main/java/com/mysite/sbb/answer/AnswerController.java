@@ -37,8 +37,8 @@ public class AnswerController {
             model.addAttribute("question", question);
             return "question_detail";
         }
-        this.answerService.create(question, answerForm.getContent(), siteUser);
-        return String.format("redirect:/question/detail/%s", id);
+        Answer answer = this.answerService.create(question, answerForm.getContent(), siteUser);
+        return String.format("redirect:/question/detail/%s#answer_%s", answer.getQuestion().getId(), answer.getId());
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -64,7 +64,7 @@ public class AnswerController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정 권한이 없습니다.");
         }
         this.answerService.modify(answer, answerForm.getContent());
-        return String.format("redirect:/question/detail/%s", answer.getQuestion().getId());
+        return String.format("redirect:/question/detail/%s#answer_%s", answer.getQuestion().getId(), answer.getId());
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -75,20 +75,20 @@ public class AnswerController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제 권한이 없습니다.");
         }
         this.answerService.delete(answer);
-    return String.format("redirect:/question/detail/%s", answer.getQuestion().getId());
+    return String.format("redirect:/question/detail/%s#answer_%s", answer.getQuestion().getId());
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/vote/{id}")
     @ResponseBody
-    public ResponseEntity<?> voteAnswer(@PathVariable("id") Integer id, Principal principal) {
+    public String voteAnswer(@PathVariable("id") Integer id, Principal principal) {
         Answer answer = this.answerService.findById(id);
         SiteUser siteUser = this.userService.getUser(principal.getName());
-        boolean isVoted = this.answerService.vote(answer, siteUser);
-//        return String.format("redirect:/question/detail/%s", answer.getQuestion().getId());
-        if (!isVoted) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 투표하셨습니다."); // 409 Conflict 반환
-        }
-        return ResponseEntity.ok("추천이 완료되었습니다."); // 200 OK 반환
+        this.answerService.vote(answer, siteUser);
+        return String.format("redirect:/question/detail/%s#answer_%s", answer.getQuestion().getId(), answer.getId());
+//        if (!isVoted) {
+//            return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 투표하셨습니다."); // 409 Conflict 반환
+//        }
+//        return ResponseEntity.ok("추천이 완료되었습니다."); // 200 OK 반환
     }
 }
