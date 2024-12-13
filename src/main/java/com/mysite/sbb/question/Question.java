@@ -2,6 +2,7 @@ package com.mysite.sbb.question;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 import com.mysite.sbb.answer.Answer;
 import com.mysite.sbb.user.SiteUser;
@@ -33,4 +34,7 @@ public class Question {
 
     @ManyToOne
     private SiteUser author;
+
+    @ManyToMany // DB에 Question_Voter 테이블이 생기고 question_id, voter_id 칼럼을 가짐
+    Set<SiteUser> voter;
 }

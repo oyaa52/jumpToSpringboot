@@ -7,12 +7,14 @@ import com.mysite.sbb.user.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 
@@ -74,5 +76,19 @@ public class AnswerController {
         }
         this.answerService.delete(answer);
     return String.format("redirect:/question/detail/%s", answer.getQuestion().getId());
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/vote/{id}")
+    @ResponseBody
+    public ResponseEntity<?> voteAnswer(@PathVariable("id") Integer id, Principal principal) {
+        Answer answer = this.answerService.findById(id);
+        SiteUser siteUser = this.userService.getUser(principal.getName());
+        boolean isVoted = this.answerService.vote(answer, siteUser);
+//        return String.format("redirect:/question/detail/%s", answer.getQuestion().getId());
+        if (!isVoted) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 투표하셨습니다."); // 409 Conflict 반환
+        }
+        return ResponseEntity.ok("추천이 완료되었습니다."); // 200 OK 반환
     }
 }
