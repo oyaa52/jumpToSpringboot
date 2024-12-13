@@ -1,6 +1,7 @@
 package com.mysite.sbb.answer;
 
 import com.mysite.sbb.question.Question;
+import com.mysite.sbb.user.SiteUser;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,8 +19,13 @@ public class Answer {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    private LocalDateTime createTime; // column annotation은 column의 성격을 특정할 때 사용되며, 보통은 annotation 없이도 column으로 인식함
+    private LocalDateTime createDate; // column annotation은 column의 성격을 특정할 때 사용되며, 보통은 annotation 없이도 column으로 인식함
+
+    private LocalDateTime modifyDate;
 
     @ManyToOne
     private Question question; // 질문 엔티티 참조하기 위해서
+
+    @ManyToOne
+    private SiteUser author;
 }

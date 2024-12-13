@@ -4,6 +4,8 @@ import com.mysite.sbb.answer.Answer;
 import com.mysite.sbb.answer.AnswerRepository;
 import com.mysite.sbb.question.Question;
 import com.mysite.sbb.question.QuestionRepository;
+import com.mysite.sbb.question.QuestionService;
+import com.mysite.sbb.user.SiteUser;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,9 @@ class JumpToSpringbootApplicationTests {
 
     @Autowired
     private QuestionRepository questionRepository;
+
+    @Autowired
+    private QuestionService questionService;
 
     @Autowired
     private AnswerRepository answerRepository;
@@ -96,7 +101,7 @@ class JumpToSpringbootApplicationTests {
             Question q = opQuestion.get();
             a.setContent("네 자동으로 생성됩니다.");
             a.setQuestion(q);
-            a.setCreateTime(LocalDateTime.now());
+            a.setCreateDate(LocalDateTime.now());
             this.answerRepository.save(a);
         }
     }
@@ -118,4 +123,14 @@ class JumpToSpringbootApplicationTests {
         List<Answer> answersList = q.getAnswersList();
         assertEquals("네 자동으로 생성됩니다.", answersList.getFirst().getContent());
     }
+
+//    @Test
+//    void testInsertDummyContents() {
+//        for (int i = 0; i < 100; i++) {
+//            String subject = String.format("Test " + i);
+//            String content = "No Content";
+//            SiteUser user = "user1";
+//            this.questionService.create(subject, content, user);
+//        }
+//    }
 }
