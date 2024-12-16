@@ -4,8 +4,10 @@ import com.mysite.sbb.question.Question;
 import com.mysite.sbb.question.QuestionService;
 import com.mysite.sbb.user.SiteUser;
 import com.mysite.sbb.user.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,6 +18,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.Principal;
 
 @RequestMapping("/answer")
@@ -80,15 +84,32 @@ public class AnswerController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/vote/{id}")
-    @ResponseBody
-    public String voteAnswer(@PathVariable("id") Integer id, Principal principal) {
+    public String voteAnswer(@PathVariable("id") Integer id,
+                             @RequestParam(value = "page", defaultValue = "0") int page,
+                             HttpServletRequest request,
+                             Principal principal) {
         Answer answer = this.answerService.findById(id);
         SiteUser siteUser = this.userService.getUser(principal.getName());
         this.answerService.vote(answer, siteUser);
-        return String.format("redirect:/question/detail/%s#answer_%s", answer.getQuestion().getId(), answer.getId());
-//        if (!isVoted) {
-//            return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 투표하셨습니다."); // 409 Conflict 반환
-//        }
-//        return ResponseEntity.ok("추천이 완료되었습니다."); // 200 OK 반환
+        String referer = request.getHeader("Referer");
+        String query = "page=" + page;
+        if (referer != null) {
+            System.out.println(referer);
+            try {
+                URI uri = new URI(referer);
+                query = uri.getQuery();
+                System.out.println(query);
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+
+        } else {
+            System.out.println("직전 URL을 찾을 수 없습니다.");
+        }
+
+        return String.format("redirect:/question/detail/%s?%s#answer_%s",
+                answer.getQuestion().getId(),
+                query,
+                answer.getId());
     }
 }
