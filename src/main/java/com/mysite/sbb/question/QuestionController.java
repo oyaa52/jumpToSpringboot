@@ -41,11 +41,13 @@ public class QuestionController {
     @GetMapping(value = "/detail/{id}")
     public String detail(Model model,
                          @PathVariable("id") Integer id, AnswerForm answerForm,
-                         @RequestParam(value = "page", defaultValue = "0") int page) {
+                         @RequestParam(value = "page", defaultValue = "0") int page,
+                         @RequestParam(value = "sort", defaultValue = "latest") String sortOption) {
         Question question = this.questionService.getQuestion(id);
         model.addAttribute("question", question);
-        Page<Answer> paging = this.AnswerService.getAnswerList(page, question.getId());
+        Page<Answer> paging = this.AnswerService.getAnswerList(page, question, sortOption);
         model.addAttribute("paging", paging);
+        model.addAttribute("sortOption", sortOption);
 
         return "question_detail";
     }
@@ -113,4 +115,17 @@ public class QuestionController {
         this.questionService.vote(question, siteUser);
         return String.format("redirect:/question/detail/%s", id);
     }
+
+//    @PostMapping("/detail/{id}")
+//    public String sortAnswers(Model model,
+//                              @PathVariable("id") Integer id,
+//                              @RequestParam String sortOption,
+//                              @RequestParam(value = "page", defaultValue = "0") int page) {
+//        Question question = this.questionService.getQuestion(id);
+//        model.addAttribute("sortOption", sortOption);
+//        Page<Answer> paging = this.AnswerService.getAnswerList(page, question.getId(), sortOption );
+//        model.addAttribute("paging", paging);
+//
+//        return "question_detail";
+//    }
 }

@@ -85,24 +85,22 @@ public class AnswerController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/vote/{id}")
     public String voteAnswer(@PathVariable("id") Integer id,
-                             @RequestParam(value = "page", defaultValue = "0") int page,
+//                             @RequestParam(value = "page", defaultValue = "0") int page,
                              HttpServletRequest request,
                              Principal principal) {
         Answer answer = this.answerService.findById(id);
         SiteUser siteUser = this.userService.getUser(principal.getName());
         this.answerService.vote(answer, siteUser);
         String referer = request.getHeader("Referer");
-        String query = "page=" + page;
+        String query = "";
+//        String query = "page=" + page;
         if (referer != null) {
-            System.out.println(referer);
             try {
                 URI uri = new URI(referer);
-                query = uri.getQuery();
-                System.out.println(query);
+                query = uri.getQuery() != null ? uri.getQuery() : "";
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             }
-
         } else {
             System.out.println("직전 URL을 찾을 수 없습니다.");
         }

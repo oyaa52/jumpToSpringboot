@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -58,8 +59,31 @@ public class AnswerService {
         }
     }
 
-    public Page<Answer> getAnswerList(int page, int questionId) {
-        Pageable pageable = PageRequest.of(page, 5, Sort.by("createDate").descending());
-        return this.answerRepository.findByQuestionId(questionId, pageable);
+    public Page<Answer> getAnswerList(int page, Question question, String sort) {
+        Pageable pageable = PageRequest.of(page, 5);
+        if ("recommended".equals(sort)) {
+            return answerRepository.findAllByQuestionOrderByVoter(question, pageable);
+        } else {
+            return answerRepository.findAllByQuestionOrderByCreateDateDesc(question, pageable);
+        }
+//        Pageable pageable;
+//        if (sort.equals("recommended")) {
+//            pageable = PageRequest.of(page, 5,
+//                    Sort.by(Sort.Order.desc("voter.size"),
+//                            Sort.Order.desc("createDate")));
+//        } else {
+//            pageable = PageRequest.of(page, 5, Sort.by("createDate").descending());
+//        }
+//        return this.answerRepository.findAllByQuestion(question, pageable);
+
+//        Sort sorting = Sort.by(Sort.Direction.DESC, "createDate");
+//        if ("recommended".equals(sort)) {
+//            sorting = Sort.by(
+//                    Sort.Order.desc("voter.size"),
+//                    Sort.Order.desc("createDate")
+//            );
+//        }
+//        Pageable pageable = PageRequest.of(page, 5, sorting);
+//        return this.answerRepository.findAllByQuestion(question, pageable);
     }
 }
