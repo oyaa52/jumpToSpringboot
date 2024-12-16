@@ -37,9 +37,11 @@
         </div>
     </div>
     <!-- 답변의 갯수 표시 -->
-    <h5 class="border-bottom my-3 py-2" th:text="|${#lists.size(question.answersList)}개의 답변이 있습니다.|"></h5>
+    <h5 class="border-bottom my-3 py-2" th:text="|${paging.totalElements}개의 답변이 있습니다.|"></h5>
+<!--    <h5 class="border-bottom my-3 py-2" th:text="|${#lists.size(question.answersList)}개의 답변이 있습니다.|"></h5>-->
     <!-- 답변 반복 시작 -->
-    <div class="card my-3" th:each="answer : ${question.answersList}">
+    <div class="card my-3" th:each="answer : ${paging}">
+        <!--    <div class="card my-3" th:each="answer : ${question.answersList}">-->
         <a th:id="|answer_${answer.id}|"></a>
         <div class="card-body">
             <div class="card-text" th:utext="${@commonUtil.markdown(answer.content)}"></div>
@@ -73,6 +75,46 @@
         </div>
     </div>
     <!-- 답변 반복 끝  -->
+
+<!--    &lt;!&ndash; 페이징 UI &ndash;&gt;-->
+<!--    <div>-->
+<!--        <button th:disabled="${paging.first}" th:href="@{|/question/${question.id}?page=${paging.number - 1}|}" class="btn btn-secondary">이전</button>-->
+<!--        <span th:text="${paging.number + 1}"></span>-->
+<!--        <button th:disabled="${paging.last}" th:href="@{|/question/${question.id}?page=${paging.number + 1}|}" class="btn btn-secondary">다음</button>-->
+<!--    </div>-->
+
+    <!-- 페이징처리 시작 -->
+    <div th:if="${!paging.isEmpty()}">
+        <ul class="pagination justify-content-center">
+            <!-- 이전 버튼 -->
+            <li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{|/question/detail/${question.id}?page=${paging.number - 1}|}">
+                    <span>이전</span>
+                </a>
+            </li>
+
+            <!-- 페이지 번호 -->
+            <li th:each="page: ${#numbers.sequence(0, paging.totalPages - 1)}"
+                th:if="${page >= paging.number - 5 and page <= paging.number + 5}"
+                th:classappend="${page == paging.number} ? 'active'"
+                class="page-item">
+                <a class="page-link"
+                   th:href="@{|/question/detail/${question.id}?page=${page}|}"
+                   th:text="${page + 1}"></a>
+            </li>
+
+            <!-- 다음 버튼 -->
+            <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{|/question/detail/${question.id}?page=${paging.number + 1}|}">
+                    <span>다음</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <!-- 페이징처리 끝 -->
+
     <!-- 답변 작성 -->
     <form th:action="@{|/answer/create/${question.id}|}" th:object="${answerForm}" method="post" class="my-3">
         <div th:replace="~{form_errors :: formErrorsFragment}"></div>
@@ -98,36 +140,8 @@
             if (confirm("정말로 추천하시겠습니까?")) {
                 location.href = this.dataset.uri;
             }
-            ;
+
         });
     });
-    // const recommend_elements = document.getElementsByClassName("recommend");
-    //
-    // Array.from(recommend_elements).forEach(function (element) {
-    //     element.addEventListener('click', async function () {
-    //         try {
-    //             // 서버에 요청 보내기
-    //             const response = await fetch(this.dataset.uri, { method: 'GET' });
-    //
-    //             // 상태 코드 처리
-    //             if (response.status === 409) {
-    //                 const message = await response.text();
-    //                 alert(message); // "이미 투표하셨습니다" 메시지 표시
-    //                 return;
-    //             }
-    //
-    //             if (response.ok) {
-    //                 const message = await response.text();
-    //                 alert(message); // "추천이 완료되었습니다" 메시지 표시
-    //                 location.reload(); // 추천 상태 반영을 위해 페이지 새로고침
-    //             } else {
-    //                 alert("오류가 발생했습니다. 다시 시도해주세요.");
-    //             }
-    //         } catch (error) {
-    //             console.error("서버 요청 중 오류:", error);
-    //             alert("서버와의 통신 중 오류가 발생했습니다.");
-    //         }
-    //     });
-    // });
 </script>
 </html>

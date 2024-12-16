@@ -5,6 +5,10 @@ import com.mysite.sbb.question.Question;
 import com.mysite.sbb.user.SiteUser;
 import com.mysite.sbb.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -52,5 +56,10 @@ public class AnswerService {
         } else {
             return false;
         }
+    }
+
+    public Page<Answer> getAnswerList(int page, int questionId) {
+        Pageable pageable = PageRequest.of(page, 5, Sort.by("createDate").descending());
+        return this.answerRepository.findByQuestionId(questionId, pageable);
     }
 }
