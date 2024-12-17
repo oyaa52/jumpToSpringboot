@@ -39,6 +39,10 @@ public class AnswerController {
         SiteUser siteUser = this.userService.getUser(principal.getName());
         if (bindingResult.hasErrors()) {
             model.addAttribute("question", question);
+            model.addAttribute("answerForm", answerForm);
+            Page<Answer> paging = this.answerService.getAnswerList(0, question, "latest");
+            model.addAttribute("paging", paging);              // Needed to display existing answers
+            model.addAttribute("sortOption", "latest");
             return "question_detail";
         }
         Answer answer = this.answerService.create(question, answerForm.getContent(), siteUser);
