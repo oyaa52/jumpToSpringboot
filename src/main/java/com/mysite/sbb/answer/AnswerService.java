@@ -66,24 +66,5 @@ public class AnswerService {
         } else {
             return answerRepository.findAllByQuestionOrderByCreateDateDesc(question, pageable);
         }
-//        Pageable pageable;
-//        if (sort.equals("recommended")) {
-//            pageable = PageRequest.of(page, 5,
-//                    Sort.by(Sort.Order.desc("voter.size"),
-//                            Sort.Order.desc("createDate")));
-//        } else {
-//            pageable = PageRequest.of(page, 5, Sort.by("createDate").descending());
-//        }
-//        return this.answerRepository.findAllByQuestion(question, pageable);
-
-//        Sort sorting = Sort.by(Sort.Direction.DESC, "createDate");
-//        if ("recommended".equals(sort)) {
-//            sorting = Sort.by(
-//                    Sort.Order.desc("voter.size"),
-//                    Sort.Order.desc("createDate")
-//            );
-//        }
-//        Pageable pageable = PageRequest.of(page, 5, sorting);
-//        return this.answerRepository.findAllByQuestion(question, pageable);
     }
 }

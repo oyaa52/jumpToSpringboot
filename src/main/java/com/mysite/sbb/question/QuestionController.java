@@ -3,6 +3,9 @@ package com.mysite.sbb.question;
 import com.mysite.sbb.answer.Answer;
 import com.mysite.sbb.answer.AnswerForm;
 import com.mysite.sbb.answer.AnswerService;
+import com.mysite.sbb.comment.Comment;
+import com.mysite.sbb.comment.CommentForm;
+import com.mysite.sbb.comment.CommentService;
 import com.mysite.sbb.user.SiteUser;
 import com.mysite.sbb.user.UserService;
 import jakarta.validation.Valid;
@@ -18,6 +21,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 
 @RequestMapping("/question")
 @RequiredArgsConstructor
@@ -27,6 +32,7 @@ public class QuestionController {
     private final QuestionService questionService;
     private final UserService userService;
     private final AnswerService AnswerService;
+    private final CommentService commentService;
 
     @GetMapping("/list")
     public String list(Model model,
@@ -39,15 +45,22 @@ public class QuestionController {
     }
 
     @GetMapping(value = "/detail/{id}")
-    public String detail(Model model,
-                         @PathVariable("id") Integer id, AnswerForm answerForm,
+    public String detail(Model model, AnswerForm answerForm, CommentForm commentForm,
+                         @PathVariable("id") Integer id,
                          @RequestParam(value = "page", defaultValue = "0") int page,
                          @RequestParam(value = "sort", defaultValue = "latest") String sortOption) {
         Question question = this.questionService.getQuestion(id);
         model.addAttribute("question", question);
+
         Page<Answer> paging = this.AnswerService.getAnswerList(page, question, sortOption);
         model.addAttribute("paging", paging);
         model.addAttribute("sortOption", sortOption);
+
+        List<Comment> comments = new ArrayList<>();
+        for (Answer answer : paging) {
+            comments.addAll(this.commentService.getComments(answer));
+        }
+        model.addAttribute("comments", comments);
 
         return "question_detail";
     }

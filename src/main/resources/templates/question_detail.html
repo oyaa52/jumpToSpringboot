@@ -40,16 +40,13 @@
     <div class="my-3 d-flex justify-content-between" style="text-align: right;">
         <!-- 답변의 갯수 표시 -->
         <h5 class="border-bottom my-3 py-2" th:text="|${paging.totalElements}개의 답변이 있습니다.|"></h5>
-<!--        <label for="sortOptions">답변 정렬:</label>-->
         <select id="sortOptions" class="form-control my-3" style="width: auto; height: 38px; display: inline-block;">
-<!--        <select id="sortOptions" class="form-control my-3" onchange="sortAnswers()" style="width: auto; height: 38px; display: inline-block;">-->
             <option value="latest" th:selected="${sortOption == 'latest'}">최신순</option>
             <option value="recommended" th:selected="${sortOption == 'recommended'}">추천순</option>
         </select>
     </div>
     <!-- 답변 반복 시작 -->
     <div class="card my-3" th:each="answer : ${paging}">
-        <!--    <div class="card my-3" th:each="answer : ${question.answersList}">-->
         <a th:id="|answer_${answer.id}|"></a>
         <div class="card-body">
             <div class="card-text" th:utext="${@commonUtil.markdown(answer.content)}"></div>
@@ -71,6 +68,12 @@
                     추천
                     <span class="badge rounded-pill bg-success" th:text="${#lists.size(answer.voter)}"></span>
                 </a>
+                <a href="javascript:void(0)" class="comment btn btn-sm btn-outline-secondary"
+                   th:data-answer-id="${answer.id}">
+                    <!--                   th:data-uri="@{|/answer/comment/${answer.id}|}">-->
+                    댓글
+                    <span class="badge rounded-pill bg-success" th:text="${#lists.size(answer.commentsList)}"></span>
+                </a>
                 <a th:href="@{|/answer/modify/${answer.id}|}" class="btn btn-sm btn-outline-secondary"
                    sec:authorize="isAuthenticated()"
                    th:if="${answer.author != null and #authentication.getPrincipal().getUsername() == answer.author.username}"
@@ -79,6 +82,26 @@
                    class="delete btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()"
                    th:if="${answer.author != null and #authentication.getPrincipal().getUsername() == answer.author.username}"
                    th:text="삭제"></a>
+                <!-- Comments List -->
+                <div th:id="'comment-list-' + ${answer.id}" class="comment-list mt-2" style="display: none;">
+                    <div th:each="comment : ${answer.commentsList}" class="comment-item p-2 border-bottom">
+                        <div class="comment-content" th:text="${comment.content}"></div>
+                        <div class="comment-meta small text-muted">
+                            <span th:text="${comment.author.username}"></span> |
+                            <span th:text="${#temporals.format(comment.createDate, 'yyyy-MM-dd HH:mm')}"></span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Hidden Comment Form -->
+                <div th:id="'comment-form-' + ${answer.id}" class="comment-form mt-2" style="display: none;">
+                    <form th:action="@{|/comment/create/${answer.id}|}" method="post" class="my-3">
+                        <textarea sec:authorize="isAnonymous()" disabled class="form-control" rows="3"
+                                  placeholder="댓글을 작성하려면 로그인이 필요합니다."></textarea>
+                        <textarea sec:authorize="isAuthenticated()" name="content" class="form-control"
+                                  rows="3" placeholder="댓글을 입력하세요."></textarea>
+                        <input type="submit" value="댓글등록" class="btn btn-primary my-2">
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -132,10 +155,10 @@
             }
         });
     });
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const sortSelect = document.getElementById('sortOptions');
         if (sortSelect) {
-            sortSelect.addEventListener('change', function() {
+            sortSelect.addEventListener('change', function () {
                 const sortValue = this.value;
                 const url = new URL(window.location.href);
                 url.searchParams.set('sort', sortValue);
@@ -152,15 +175,22 @@
             }
         });
     });
-    // function sortAnswers() {
-    //     const sortValue = document.getElementById('sortOptions').value;
-    //     const url = new URL(window.location.href);
-    //     url.searchParams.set('sort', sortValue); // URL에 sort 파라미터 추가/수정
-    //     window.location.href = url.toString(); // 페이지 새로 고침
-    // }
-    // const sortSelect = document.getElementById('sortOptions');
-    // if (sortSelect) {
-    //     sortSelect.addEventListener('change', sortAnswers);
-    // }
+    const commentBtns = document.getElementsByClassName("comment");
+    Array.from(commentBtns).forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const answerId = this.getAttribute('data-answer-id');
+            const commentList = document.getElementById('comment-list-' + answerId);
+            const commentForm = document.getElementById('comment-form-' + answerId);
+
+            // Toggle both comments list and form
+            if (commentList.style.display === 'none') {
+                commentList.style.display = 'block';
+                commentForm.style.display = 'block';
+            } else {
+                commentList.style.display = 'none';
+                commentForm.style.display = 'none';
+            }
+        });
+    });
 </script>
 </html>
