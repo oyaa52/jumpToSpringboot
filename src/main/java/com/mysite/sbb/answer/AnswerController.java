@@ -1,5 +1,7 @@
 package com.mysite.sbb.answer;
 
+import com.mysite.sbb.category.Category;
+import com.mysite.sbb.category.CategoryService;
 import com.mysite.sbb.question.Question;
 import com.mysite.sbb.question.QuestionService;
 import com.mysite.sbb.user.SiteUser;
@@ -21,6 +23,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
+import java.util.List;
 
 @RequestMapping("/answer")
 @AllArgsConstructor
@@ -43,7 +46,6 @@ public class AnswerController {
             Page<Answer> paging = this.answerService.getAnswerList(0, question, "latest");
             model.addAttribute("paging", paging);              // Needed to display existing answers
             model.addAttribute("sortOption", "latest");
-            return "question_detail";
         }
         Answer answer = this.answerService.create(question, answerForm.getContent(), siteUser);
         return String.format("redirect:/question/detail/%s#answer_%s", answer.getQuestion().getId(), answer.getId());

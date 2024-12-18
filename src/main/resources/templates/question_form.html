@@ -7,12 +7,25 @@
             <div th:each="err : ${#fields.allErrors()}" th:text="${err}" />
         </div>
         <div class="mb-3">
+            <label for="categoryId" class="form-label">카테고리</label>
+            <select th:field="*{categoryId}" class="form-control">
+                <option value=""
+                        th:selected="${questionForm.categoryId == null}"
+                >카테고리를 선택하세요</option>
+                <option th:each="category : ${categoriesList}"
+                        th:value="${category.id}"
+                        th:text="${category.categoryName}"
+                        th:selected="${questionForm.categoryId != null && questionForm.categoryId == category.id}">
+                </option>
+            </select>
+        </div>
+        <div class="mb-3">
             <label for="subject" class="form-label">제목</label>
-            <input type="text" name="subject" id="subject" class="form-control">
+            <input type="text" th:field="*{subject}" name="subject" id="subject" class="form-control">
         </div>
         <div class="mb-3">
             <label for="content" class="form-label">내용</label>
-            <textarea name="content" id="content" class="form-control" rows="10"></textarea>
+            <textarea name="content" id="content" th:field="*{content}" class="form-control" rows="10"></textarea>
         </div>
         <input type="submit" value="저장하기" class="btn btn-primary my-2">
     </form>

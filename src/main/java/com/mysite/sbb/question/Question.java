@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.mysite.sbb.answer.Answer;
+import com.mysite.sbb.category.Category;
 import com.mysite.sbb.user.SiteUser;
 import jakarta.persistence.*;
 
@@ -37,4 +38,7 @@ public class Question {
 
     @ManyToMany // DB에 Question_Voter 테이블이 생기고 question_id, voter_id 칼럼을 가짐
     Set<SiteUser> voter;
+
+    @ManyToOne
+    private Category category;
 }

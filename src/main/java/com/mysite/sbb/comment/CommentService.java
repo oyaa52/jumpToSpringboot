@@ -28,8 +28,6 @@ public class CommentService {
     }
 
     public List<Comment> getComments(Answer answer) {
-//        this.answerService.findById(answer.getId());
-//        return this.commentRepository.findAll();
         return commentRepository.findByAnswerId(answer.getId());
     }
 }

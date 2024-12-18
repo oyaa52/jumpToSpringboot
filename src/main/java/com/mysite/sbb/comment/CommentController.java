@@ -36,7 +36,6 @@ public class CommentController {
         Answer answer = this.answerService.findById(id);
         SiteUser siteUser = this.userService.getUser(principal.getName());
         if (bindingResult.hasErrors()) {
-//            model.addAttribute("question", question);
             model.addAttribute("answer", answer);
             model.addAttribute("commentForm", commentForm);
             return String.format("redirect:/question/detail/%s#answer_%s",

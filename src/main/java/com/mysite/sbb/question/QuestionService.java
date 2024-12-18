@@ -2,6 +2,7 @@ package com.mysite.sbb.question;
 
 import com.mysite.sbb.DataNotFoundException;
 import com.mysite.sbb.answer.Answer;
+import com.mysite.sbb.category.Category;
 import com.mysite.sbb.user.SiteUser;
 import jakarta.persistence.criteria.*;
 import lombok.RequiredArgsConstructor;
@@ -36,12 +37,13 @@ public class QuestionService {
         }
     }
 
-    public void create(String subject, String content, SiteUser user) {
+    public void create(String subject, String content, SiteUser user, Category category) {
         Question question = new Question();
         question.setSubject(subject);
         question.setContent(content);
         question.setCreateDate(LocalDateTime.now());
         question.setAuthor(user);
+        question.setCategory(category);
         this.questionRepository.save(question);
     }
 
@@ -53,10 +55,11 @@ public class QuestionService {
         return this.questionRepository.findAll(spec, pageable);
     }
 
-    public void modify(Question question, String subject, String content) {
+    public void modify(Question question, String subject, String content, Category category) {
         question.setSubject(subject);
         question.setContent(content);
         question.setModifyDate(LocalDateTime.now());
+        question.setCategory(category);
         this.questionRepository.save(question);
     }
 
